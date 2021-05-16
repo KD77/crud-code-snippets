@@ -12,8 +12,11 @@ con.on('open', () =>{
   console.log('Connected')
 })
 
-
-
+app.use(express.json());
+app.use(express.urlencoded({
+  extended: true
+}));
+app.use('/snippet',require('./routers/snippetRouter'))
 app.listen(PORT,()=>{
   console.log('Server started')
 })

@@ -5,7 +5,7 @@ const mongoose= require('mongoose');
     type: String,
     require: true
   },
-  snippets:{
+  snippet:{
     type: String,
     require: true,
     trim: true
