@@ -2,6 +2,9 @@ const express= require('express')
 const mongoose= require('mongoose')
 require('dotenv/config')
 const session=require('express-session')
+const hbs = require('express-hbs')
+const path = require('path')
+const morgan = require('morgan')
 
 const app = express()
 
@@ -13,14 +16,28 @@ con.on('open', () =>{
   console.log('Connected')
 })
 
- app.use(express.json());
+app.engine(
+  'hbs',
+  hbs.express4({
+    defaultLayout: path.join(__dirname, 'views', 'layouts', 'default'),
+    partialsDir: path.join(__dirname, 'views', 'partials')
+  })
+)
+app.set('view engine', 'hbs')
+app.set('views', path.join(__dirname, 'views'))
+
+
+app.use(morgan('dev'))
+ //app.use(express.json());
  app.use(express.urlencoded({
   extended: true
 }));
+app.use(express.static(path.join(__dirname, 'public')))
+
 app.use(
   session({
    // name: process.env.SESSION_NAME,
-    secret: 'keyboard cat',
+    secret: 'KAT',
     saveUninitialized: false, // do not create session until something stored
     resave: false, // do not save session if unmodified
     cookie: {
@@ -49,21 +66,22 @@ app.use('/',require('./routers/homeRouter'))
  app.use('/login', require('./routers/loginRouter'))
  app.use('/register', require('./routers/registerRouter'))
  app.use('/logout', require('./routers/logoutRouter'))
+ app.use('*', (req, res, next) => next(createError(404)))
  
  app.use((err, req, res, next) => {
   if (err.statusCode === 404) {
     return res
       .status(404)
-      .sendFile(path.join(__dirname, 'views', 'errors', '404.html'))
+      .sendFile(path.join(__dirname, 'views', 'error', '404.html'))
   }
 
   if (req.app.get('env') !== 'development') {
     return res
       .status(500)
-      .sendFile(path.join(__dirname, 'views', 'errors', '500.html'))
+      .sendFile(path.join(__dirname, 'views', 'error', '500.html'))
   }
 
-  res.status(err.statusCode || 500).render('errors/error', { error: err })
+  res.status(err.statusCode || 500).render('error/error', { error: err })
 })
 
 
