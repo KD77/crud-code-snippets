@@ -1,3 +1,3 @@
 # A02 CRUD Code Snippets
 
-Template repo for the assignment.
+ [THE PRESENTATION VIDEO](https://www.youtube.com/watch?v=cyBK-A582y0)
