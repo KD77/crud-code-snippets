@@ -1,8 +1,8 @@
 html {
-  background-color: whitesmoke;
+  background-color: #d8d8d8;
 }
 h1 {
-  color: red;
+  color: black;
   text-align: center;
 }
 
@@ -35,7 +35,7 @@ h1 {
   list-style-type: none;
   width: 100%;
   overflow: hidden;
-  background-color: #444;
+  background-color: #000;
 }
 
 .alert {
@@ -63,10 +63,12 @@ h1 {
 }
 
 .snippets {
+  display: flex;
+  justify-content: space-around;
   list-style-type: none;
   margin: 0 auto 0;
   width: 10%;
-  background-color: #333;
+ 
 }
 
 .snippet-input {
@@ -116,7 +118,7 @@ select {
   position: relative;
   margin: 20px auto 0;
   border-radius: 5px;
-  background-color: darkslategrey;
+  
   padding: 20px;
   color: white;
   width: 40%;
@@ -126,11 +128,11 @@ select {
 #created-at {
   margin: auto;
   width: 100%;
-  color: white;
+  color: #000;
   text-align: left;
-  position: absolute;
-  top: 2px;
-  left: 2px;
+  top: 10px;
+  left: 0px;
+ margin-bottom: 10px;
 }
 
 .logged-in {
@@ -138,19 +140,43 @@ select {
   padding: 14px 16px;
   text-decoration: none;
 }
-
-.btn {
-  background-color: black;
+.button {
+  background-color: #4CAF50; /* Green */
   border: none;
   color: white;
-  padding: 10px 20px;
+  padding: 10px 32px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
   cursor: pointer;
 }
 
+.btn {
+  background-color: white;
+  color: black;
+  border: 2px solid #555555;
+  text-decoration: none;
+  padding: 10px 32px;
+
+}
+
+
+.btn:hover {
+  background-color: #555555;
+  color: white;
+}
+a {
+ color: #000;
+  text-decoration: none;
+  margin: 10px;
+}
+li .btn {
+ padding: 20px;
+ margin: 40px;
+}
 .nav-li a:hover {
   background-color: gray;
 }
@@ -160,7 +186,7 @@ footer {
   left: 0;
   bottom: 0;
   width: 100%;
-  background-color: #444;
+  background-color: #000;
   color: white;
   text-align: center;
 }
