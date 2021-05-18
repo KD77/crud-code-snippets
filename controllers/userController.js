@@ -38,15 +38,20 @@ userController.register= (req, res)=>{
 userController.create= async(req, res, next)=>{
   if (
     req.body.username.length > 2 &&
-    req.body.password1.length > 4 &&
-    req.body.password1 === req.body.password2
+    req.body.password.length > 4 &&
+    req.body.password === req.body.password2
   ){
     try {
+      console.log(req.body.username,"("+req.body.password+")")
+      console.log("("+req.body.password2+")")
       const user = new User({
         username: req.body.username,
-        password: req.body.password1
+        password: req.body.password
       })
+      console.log(this.user)
+      
       await user.save()
+      console.log('dj kaliddiriye')
       req.session.flash = {
         type: 'success',
         text: 'Successfully created, please login.'
@@ -65,10 +70,10 @@ userController.create= async(req, res, next)=>{
         text: 'UserName must be at least 3 characters.'
       }
       res.redirect('.')
-    } else if (req.body.password1 !== req.body.password2) {
+    } else if (req.body.password !== req.body.password2) {
       req.session.flash = { type: 'danger', text: "Passwords don't match." }
       res.redirect('.')
-    } else if (req.body.password1.length < 5) {
+    } else if (req.body.password.length < 5) {
       req.session.flash = {
         type: 'danger',
         text: 'Password must be at least 5 characters.'

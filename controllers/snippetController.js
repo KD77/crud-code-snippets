@@ -1,69 +1,79 @@
 const Snippet = require('../models/snippet')
 const moment = require('moment')
 const snippetController = {}
-
-snippetController.index = async( req,res, next)=>{
+snippetController.index = async (req, res, next) => {
   try {
-    const data={
-      snippets:(await Snippet.find({})).map((snippet)=>({
-        id:snippet._id,
-        user:snippet.username,
-        snippet:snippet.snippet,
+    const data = {
+      snippets: (await Snippet.find({})).map((snippet) => ({
+        id: snippet._id,
+        user: snippet.username,
+        snippet: snippet.snippet,
         createdAt: moment(snippet.createdAt).format('YY-MM-DD HH:mm'),
         updatedAt: moment(snippet.updatedAt).format('YY-MM-DD HH:mm')
-
       }))
     }
     data.snippets.reverse()
-    res.render('snippets/index',{viewData: data})
-    
-  } catch (error) {
-    error.statusCode=500
-    return next(error)
-    
+    res.render('snippets/index', { viewData: data })
+  } catch (err) {
+    err.statusCode = 500
+    return next(err)
   }
-
-}
-snippetController.new= async(req, res)=>{
-  res.render('snippets/new',{})
-
 }
 
-snippetController.create= async(req, res, next)=>{
-  if(req.body.snippet.trim().length){
+/**
+ * New snippet Handler.
+ *
+ * @param {*} req Request.
+ * @param {*} res Response.
+ */
+snippetController.new = async (req, res) => {
+  res.render('snippets/new', {})
+}
+
+/**
+ * Snippet Create Handler.
+ *
+ * @param {*} req Request.
+ * @param {*} res Response.
+ * @param {*} next Next.
+ */
+snippetController.create = async (req, res, next) => {
+  if (req.body.snippet.trim().length) {
     try {
-       const snpt = new Snippet({
-      username: req.session.userName,
-      snippet: req.body.snippet
-    })
-  
-    await snpt.save()
-    req.session.flash={
-      type: 'success',
-      text: 'Snippet successfully saved.'
+      const snippet = new Snippet({
+        username: req.session.userName,
+        snippet: req.body.snippet
+      })
+      await snippet.save()
+      req.session.flash = {
+        type: 'success',
+        text: 'Snippet successfully saved.'
+      }
+      res.redirect('.')
+    } catch (err) {
+      err.statusCode = 500
+      return next(err)
     }
-    res.redirect('.')
-
-    } catch (error) {
-      error.statusCode=500
-      return next(error)
-      
-    }
-   
-  }else {
+  } else {
     req.session.flash = {
       type: 'danger',
       text: 'Obs .. Snippet Code must be One character or more.'
     }
     res.redirect('.')
   }
-
-
 }
-snippetController.update= async( req, res, next)=>{
-  if(req.body.snippet){
+
+/**
+ * Update Snippet Handler.
+ *
+ * @param {*} req Request.
+ * @param {*} res Response.
+ * @param {*} next Next.
+ */
+snippetController.update = async (req, res, next) => {
+  if (req.body.snippet.trim().length) {
     try {
-      const update = await Snippet.updateOne(
+      const result = await Snippet.updateOne(
         { _id: req.params.id },
         {
           snippet: req.body.snippet
@@ -81,12 +91,11 @@ snippetController.update= async( req, res, next)=>{
         }
       }
       res.redirect('..')
-      
-    } catch (error) {
-      error.statusCode=500
-      return next(error)
+    } catch (err) {
+      err.statusCode = 500
+      return next(err)
     }
-  }else {
+  } else {
     req.session.flash = {
       type: 'danger',
       text: 'Obs .. Snippet Code must be One character or more.'
@@ -94,21 +103,15 @@ snippetController.update= async( req, res, next)=>{
     res.redirect('./edit')
   }
 }
-snippetController.delete=async( req, res, next)=>{
-  try {
-    await Snippet.deleteOne({ _id: req.params.id })
-    req.session.flash = {
-      type: 'success',
-      text: 'The code snippet was deleted successfully.'
-    }
-    res.redirect('..')
-    
-  } catch (error) {
-    error.statusCode=500
-    return next(error)
-  }
-}
-snippetController.remove= async( req, res, next)=>{
+
+/**
+ * Remove Snippet Handler.
+ *
+ * @param {*} req Request.
+ * @param {*} res Response.
+ * @param {*} next Next.
+ */
+snippetController.remove = async (req, res, next) => {
   try {
     const snippet = await Snippet.findOne({ _id: req.params.id })
     const viewData = {
@@ -116,13 +119,41 @@ snippetController.remove= async( req, res, next)=>{
       snippet: snippet.snippet
     }
     res.render('snippets/remove', { viewData })
-  } catch (error) {
-    error.statusCode=500
-    return next(error)
-    
+  } catch (err) {
+    err.statusCode = 500
+    return next(err)
   }
 }
-snippetController.edit= async( req, res, next)=>{
+
+/**
+ * Delete Snippet Handler.
+ *
+ * @param {*} req Request.
+ * @param {*} res Response.
+ * @param {*} next Next.
+ */
+snippetController.delete = async (req, res, next) => {
+  try {
+    await Snippet.deleteOne({ _id: req.params.id })
+    req.session.flash = {
+      type: 'success',
+      text: 'The code snippet was deleted successfully.'
+    }
+    res.redirect('..')
+  } catch (err) {
+    err.statusCode = 500
+    return next(err)
+  }
+}
+
+/**
+ * Edit Snippet Handler.
+ *
+ * @param {*} req Request.
+ * @param {*} res Response.
+ * @param {*} next Next.
+ */
+snippetController.edit = async (req, res, next) => {
   try {
     const snippet = await Snippet.findOne({ _id: req.params.id })
     const data = {
@@ -133,21 +164,27 @@ snippetController.edit= async( req, res, next)=>{
       updatedAt: moment(snippet.updatedAt).format('YY-MM-DD HH:mm')
     }
     res.render('snippets/edit', { viewData: data })
-    
-  } catch (error) {
-    error.statusCode=500
-    return next(error)
-    
+  } catch (err) {
+    err.statusCode = 500
+    return next(err)
   }
 }
-snippetController.authorize= async( req, res, next)=>{
+
+/**
+ * Authorization Handler.
+ *
+ * @param {*} req Request.
+ * @param {*} res Response.
+ * @param {*} next Next.
+ */
+snippetController.authorize = async (req, res, next) => {
   if (!req.params.id && req.session.userName) {
     return next()
   }
-  const userName=async()=>{
+
+  const userName = async function () {
     const user = await Snippet.findOne({ _id: req.params.id })
     return user.username
-
   }
   if (!req.session.userName || req.session.userName !== (await userName())) {
     const err = new Error('403: Forbidden')

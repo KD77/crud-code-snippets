@@ -18,7 +18,7 @@ const userSchema= mongoose.Schema({
 }
 
 )
-userSchema.static.authenticate = async(username, password)=>{
+userSchema.statics.authenticate = async function(username, password){
  const user= await this.findOne({username})
  if(!user || !(await bcrypt.compare(password,user.password))){
   throw new Error('Invalid Credintial.')
@@ -26,7 +26,8 @@ userSchema.static.authenticate = async(username, password)=>{
 return user
 
 }
-userSchema.pre('save',async()=>{
+userSchema.pre('save',async function(){
   this.password=await bcrypt.hash(this.password, 8)
+  console.log(this.password)
 })
 module.exports=mongoose.model('User',userSchema)

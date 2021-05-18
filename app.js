@@ -5,6 +5,7 @@ const session=require('express-session')
 const hbs = require('express-hbs')
 const path = require('path')
 const morgan = require('morgan')
+const createError = require('http-errors')
 
 const app = express()
 
@@ -62,7 +63,7 @@ app.use((req, res, next) => {
   next()
 })
 app.use('/',require('./routers/homeRouter'))
- app.use('/snippet',require('./routers/snippetRouter'))
+ app.use('/snippets',require('./routers/snippetRouter'))
  app.use('/login', require('./routers/loginRouter'))
  app.use('/register', require('./routers/registerRouter'))
  app.use('/logout', require('./routers/logoutRouter'))
