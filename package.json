@@ -24,5 +24,8 @@
     "mongoose": "^5.12.9",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.7"
+  },
+  "devDependencies": {
+    "standard": "^16.0.3"
   }
 }

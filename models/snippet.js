@@ -15,4 +15,4 @@ const mongoose= require('mongoose');
     timestamps:true,
   }
 )
-module.exports=mongoose.model('snippet', snippetSchema)
+module.exports=mongoose.model('Snippet', snippetSchema)

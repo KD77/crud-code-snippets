@@ -1,21 +1,27 @@
-const express= require('express')
-const mongoose= require('mongoose')
-require('dotenv/config')
-const session=require('express-session')
+'use strict'
+
+const mongoose = require('mongoose')
+const express = require('express')
 const hbs = require('express-hbs')
 const path = require('path')
+const dotenv = require('dotenv')
 const morgan = require('morgan')
+
+
+const session = require('express-session')
 const createError = require('http-errors')
+dotenv.config({ path: 'config.env' })
 
-const app = express()
-
-const PORT= 3000
 
 mongoose.connect(process.env.DB_CONNECTION,{ useNewUrlParser: true, useUnifiedTopology: true })
 const con= mongoose.connection;
 con.on('open', () =>{
   console.log('Connected')
 })
+
+const PORT = process.env.PORT || 3000
+
+const app = express()
 
 app.engine(
   'hbs',
@@ -27,17 +33,14 @@ app.engine(
 app.set('view engine', 'hbs')
 app.set('views', path.join(__dirname, 'views'))
 
-
+// Middleware
 app.use(morgan('dev'))
- //app.use(express.json());
- app.use(express.urlencoded({
-  extended: true
-}));
+app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(
   session({
-   // name: process.env.SESSION_NAME,
+    name: 'CRUD',
     secret: 'KAT',
     saveUninitialized: false, // do not create session until something stored
     resave: false, // do not save session if unmodified
@@ -62,33 +65,36 @@ app.use((req, res, next) => {
   app.locals.expreq = req.session.userName
   next()
 })
-app.use('/',require('./routers/homeRouter'))
- app.use('/snippets',require('./routers/snippetRouter'))
- app.use('/login', require('./routers/loginRouter'))
- app.use('/register', require('./routers/registerRouter'))
- app.use('/logout', require('./routers/logoutRouter'))
- app.use('*', (req, res, next) => next(createError(404)))
- 
- app.use((err, req, res, next) => {
+
+// Mounting application's routes
+app.use('/', require('./routers/homeRouter'))
+app.use('/snippets', require('./routers/snippetsRouter'))
+app.use('/login', require('./routers/loginRouter'))
+app.use('/register', require('./routers/registerRouter'))
+app.use('/logout', require('./routers/logoutRouter'))
+app.use('*', (req, res, next) => next(createError(404)))
+
+app.use((err, req, res, next) => {
   if (err.statusCode === 404) {
     return res
       .status(404)
-      .sendFile(path.join(__dirname, 'views', 'error', '404.html'))
+      .sendFile(path.join(__dirname, 'views', 'errors', '404.html'))
   }
 
   if (req.app.get('env') !== 'development') {
     return res
       .status(500)
-      .sendFile(path.join(__dirname, 'views', 'error', '500.html'))
+      .sendFile(path.join(__dirname, 'views', 'errors', '500.html'))
   }
 
-  res.status(err.statusCode || 500).render('error/error', { error: err })
+  res.status(err.statusCode || 500).render('errors/error', { error: err })
 })
 
+// Listening to port
+const server = app.listen(PORT, () =>
+  console.log(`Server running at http://localhost:${PORT}`)
+)
 
-app.listen(PORT,()=>{
-  console.log('Server started')
-})
 // Handel unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
   console.log(`Error: ${err.message}`.red)
